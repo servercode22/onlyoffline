@@ -9,21 +9,21 @@
     
     
 
-<form action="/business/addmacaddress" method="post">
+<form action="/pos/business/addmacaddress" method="post">
     @csrf;
   <div class="col-md-5 mb-10">
-    <label  class="form-label">@lang('business.serial_key')*</label>
+    <label  class="form-label">@lang('Serial key')*</label>
     <input type="text" name="serialkey"class="form-control" placeholder="Serial Key">
     
   </div>
   <div class="col-md-6 mb-10">
-    <label  class="form-label">@lang('business.ip_address')</label>
+    <label  class="form-label">@lang('MAc Address')</label>
     <input readonly type="text" name="macaddress" class="form-control" value="<?php echo $macAddr?>">
   </div>
 
   <div class="col-md-5 mt-10">
     
-    <label  class="form-label">@lang('business.customer_name')*</label>
+    <label  class="form-label">@lang('Customer Name')*</label>
     <input type="text" class="form-control" name="customename" placeholder="Customer Name">
     
     

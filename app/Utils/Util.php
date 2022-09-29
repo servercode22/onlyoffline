@@ -63,6 +63,7 @@ class Util
         $thousand_separator = !empty($business_details) ? $business_details->thousand_separator : session('currency')['thousand_separator'];
         $decimal_separator = !empty($business_details) ? $business_details->decimal_separator : session('currency')['decimal_separator'];
 
+        
         $currency_precision = config('constants.currency_precision', 2);
 
         if ($is_quantity) {

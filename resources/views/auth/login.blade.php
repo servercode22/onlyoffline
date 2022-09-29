@@ -8,8 +8,6 @@
             {{ csrf_field() }}
             <div class="form-group has-feedback {{ $errors->has('username') ? ' has-error' : '' }}">
                 @php
-                 
-      
         
                     $username = old('username');
                     $password = null;
