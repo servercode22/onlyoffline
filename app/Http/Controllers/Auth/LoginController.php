@@ -113,33 +113,52 @@ class LoginController extends Controller
 
     protected function redirectTo()
     {
-        $macAddr = exec('getmac');
-        // dd($macAddr);
-      $data=  DB::table('macaddres')->first();
-        $checkmac=$data->macaddress;
-        if ($macAddr=$checkmac) {
-            
-                        $user = \Auth::user();
-                    if (!$user->can('dashboard.data') && $user->can('sell.create')) {
-                        return '/pos/create';
-                    }
-
-                    if ($user->user_type == 'user_customer') {
-                        return 'contact/contact-dashboard';
-                    }
-
-                    return '/home';
-        }else {
-            
+           //hami code start
+           $macAddr = exec('getmac');
+        
+           $data=  DB::table('macaddres')->first();
+           if($data==null){
+               $this->businessUtil->activityLog(auth()->user(), 'logout');
+   
+               request()->session()->flush();
+               \Auth::logout();
            
-            $this->businessUtil->activityLog(auth()->user(), 'logout');
-
-        request()->session()->flush();
-        \Auth::logout();
-        
+              
+         }else {
+         
+           $checkmac=$data->macaddress;
            
-        
-        }
-        
+           
+           if ($macAddr===$checkmac) {
+               
+                           $user = \Auth::user();
+                       if (!$user->can('dashboard.data') && $user->can('sell.create')) {
+                           return '/pos/create';
+                       }
+   
+                       if ($user->user_type == 'user_customer') {
+                           return 'contact/contact-dashboard';
+                       }
+   
+                       return '/home';
+           }else {
+               
+              
+               $this->businessUtil->activityLog(auth()->user(), 'logout');
+   
+           request()->session()->flush();
+           \Auth::logout();
+           
+              
+           
+           }
+         
+           
+         }
+           //hami code end
+           
     }
+        //hami code end
+        
+    
 }

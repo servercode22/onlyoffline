@@ -21,7 +21,7 @@ Route::middleware(['setData'])->group(function () {
     Auth::routes();
     //hamza code start
     Route::get('/business/moreregistration', 'BusinessController@getmoreregiestration')->name('business.getmoreregiestration');
-    Route::post('/business/addmacaddress','BusinessController@addmacaddress')->name('business.addmacaddress');
+    Route::post('/pos/business/addmacaddress','BusinessController@addmacaddress')->name('business.addmacaddress');
     //hamza code end
     Route::get('/business/register', 'BusinessController@getRegister')->name('business.getRegister');
     Route::post('/business/register', 'BusinessController@postRegister')->name('business.postRegister');
@@ -65,7 +65,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::resource('units', 'UnitController');
 
-    Route::post('check-mobile', 'ContactController@checkMobile');
+    Route::post('pos/check-mobile', 'ContactController@checkMobile');
     Route::get('/get-contact-due/{contact_id}', 'ContactController@getContactDue');
     Route::get('/contacts/payments/{contact_id}', 'ContactController@getContactPayments');
     Route::get('/contacts/map', 'ContactController@contactMap');

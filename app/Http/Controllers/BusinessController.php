@@ -433,6 +433,8 @@ class BusinessController extends Controller
 
             //pos_settings
             $pos_settings = $request->input('pos_settings');
+
+            
             $default_pos_settings = $this->businessUtil->defaultPosSettings();
             foreach ($default_pos_settings as $key => $value) {
                 if (!isset($pos_settings[$key])) {
@@ -440,6 +442,7 @@ class BusinessController extends Controller
                 }
             }
             $business_details['pos_settings'] = json_encode($pos_settings);
+           
 
             $business_details['custom_labels'] = json_encode($business_details['custom_labels']);
 

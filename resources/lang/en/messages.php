@@ -25,6 +25,7 @@ return [
     'please_select' => 'Please Select',
     'cancel' => 'Cancel',
     'date' => 'Date',
+    'due_date' => ' Due Date',
     'filter_by_date' => 'Filter by date',
     'location' => 'Location',
     'go_back' => 'Go Back',

@@ -2,6 +2,7 @@
 
 return [
     
+    // 'image_resize' => DB::table('business')->where('id', 1),
      /*
     |--------------------------------------------------------------------------
     | App Constants
@@ -10,6 +11,7 @@ return [
     */
 
     'langs' => [
+
         'en' => ['full_name' => 'English', 'short_name' => 'English'],
         'es' => ['full_name' => 'Spanish - Español', 'short_name' => 'Spanish'],
         'sq' => ['full_name' => 'Albanian - Shqip', 'short_name' => 'Albanian'],
@@ -39,7 +41,9 @@ return [
     
     'iraqi_selling_price_adjustment' => false,
 
-    'currency_precision' => 3, //Maximum 4
+    //hami code
+    
+    'currency_precision' => 0, //Maximum 4
     'quantity_precision' => 2,  //Maximum 4
 
     'product_img_path' => 'img',
@@ -79,3 +83,4 @@ return [
     'enable_b2b_marketplace' => false,
     'enable_contact_assign' => false, //Used in add/edit contacts screen
 ];
+// }

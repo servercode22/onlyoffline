@@ -41,6 +41,7 @@
                     <tr>
                         <th>@lang('messages.action')</th>
                         <th>@lang('messages.date')</th>
+                        <th>@lang('messages.due_date')</th>
                         <th>@lang('sale.invoice_no')</th>
                         <th>@lang('sale.customer_name')</th>
                         <th>@lang('lang_v1.contact_no')</th>
@@ -131,14 +132,14 @@ $(document).ready( function(){
                     d.end_date = end;
                 }
                 d.is_direct_sale = 1;
-
+               
                 d.location_id = $('#sell_list_filter_location_id').val();
                 d.customer_id = $('#sell_list_filter_customer_id').val();
                 d.payment_status = $('#sell_list_filter_payment_status').val();
                 d.created_by = $('#created_by').val();
                 d.sales_cmsn_agnt = $('#sales_cmsn_agnt').val();
                 d.service_staffs = $('#service_staffs').val();
-
+                d.due_date_filter = $('#due_date_filter').val();
                 if($('#shipping_status').length) {
                     d.shipping_status = $('#shipping_status').val();
                 }
@@ -160,6 +161,7 @@ $(document).ready( function(){
         columns: [
             { data: 'action', name: 'action', orderable: false, "searchable": false},
             { data: 'transaction_date', name: 'transaction_date'  },
+            { data: 'due_dates', name: 'due_dates'  },
             { data: 'invoice_no', name: 'invoice_no'},
             { data: 'conatct_name', name: 'conatct_name'},
             { data: 'mobile', name: 'contacts.mobile'},
@@ -214,7 +216,7 @@ $(document).ready( function(){
         }
     });
 
-    $(document).on('change', '#sell_list_filter_location_id, #sell_list_filter_customer_id, #sell_list_filter_payment_status, #created_by, #sales_cmsn_agnt, #service_staffs, #shipping_status, #sell_list_filter_source',  function() {
+    $(document).on('change', '#sell_list_filter_location_id, #sell_list_filter_customer_id, #sell_list_filter_payment_status, #created_by, #sales_cmsn_agnt, #service_staffs, #shipping_status, #due_date_filter, #sell_list_filter_source',  function() {
         sell_table.ajax.reload();
     });
 

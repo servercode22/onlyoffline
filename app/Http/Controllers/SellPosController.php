@@ -138,7 +138,9 @@ class SellPosController extends Controller
         }
 
         $is_types_service_enabled = $this->moduleUtil->isModuleEnabled('types_of_service');
+       
 
+     
         $shipping_statuses = $this->transactionUtil->shipping_statuses();
 
         return view('sale_pos.index')->with(compact('business_locations', 'customers', 'sales_representative', 'is_cmsn_agent_enabled', 'commission_agents', 'service_staffs', 'is_tables_enabled', 'is_service_staff_enabled', 'is_types_service_enabled', 'shipping_statuses'));
@@ -238,6 +240,7 @@ class SellPosController extends Controller
 
         $shipping_statuses = $this->transactionUtil->shipping_statuses();
 
+
         $default_datetime = $this->businessUtil->format_date('now', true);
 
         $featured_products = !empty($default_location) ? $default_location->getFeaturedProducts() : [];
@@ -299,6 +302,7 @@ class SellPosController extends Controller
      */
     public function store(Request $request)
     {
+         
         if (!auth()->user()->can('sell.create') && !auth()->user()->can('direct_sell.access') && !auth()->user()->can('so.create') ) {
             abort(403, 'Unauthorized action.');
         }
@@ -312,10 +316,10 @@ class SellPosController extends Controller
         if (!$is_direct_sale && $this->cashRegisterUtil->countOpenedRegister() == 0) {
             return redirect()->action('CashRegisterController@create');
         }
-
-        try {
+      
+        // try {
             $input = $request->except('_token');
-
+            // dd($input); 
             $input['is_quotation'] = 0;
             //status is send as quotation from Add sales screen.
             if ($input['status'] == 'quotation') {
@@ -368,10 +372,15 @@ class SellPosController extends Controller
                 } else {
                     $input['transaction_date'] = $this->productUtil->uf_date($request->input('transaction_date'), true);
                 }
+                if (empty($request->input('due_dates'))) {
+                    $input['due_dates'] =  \Carbon::now();
+                } else {
+                    $input['due_dates'] = $this->productUtil->uf_date($request->input('due_dates'), true);
+                }
                 if ($is_direct_sale) {
                     $input['is_direct_sale'] = 1;
                 }
-
+               
                 //Set commission agent
                 $input['commission_agent'] = !empty($request->input('commission_agent')) ? $request->input('commission_agent') : null;
                 $commsn_agnt_setting = $request->session()->get('business.sales_cmsn_agnt');
@@ -565,7 +574,7 @@ class SellPosController extends Controller
                     $url = $this->transactionUtil->getInvoiceUrl($transaction->id, $business_id);
                     return redirect()->to($url . '?print_on_load=true');
                 }
-
+                // dd($transaction);
                 $msg = trans("sale.pos_sale_added");
                 $receipt = '';
                 $invoice_layout_id = $request->input('invoice_layout_id');
@@ -605,22 +614,22 @@ class SellPosController extends Controller
                             'msg' => trans("messages.something_went_wrong")
                         ];
             }
-        } catch (\Exception $e) {
-            DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            $msg = trans("messages.something_went_wrong");
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+        //     $msg = trans("messages.something_went_wrong");
                 
-            if (get_class($e) == \App\Exceptions\PurchaseSellMismatch::class) {
-                $msg = $e->getMessage();
-            }
-            if (get_class($e) == \App\Exceptions\AdvanceBalanceNotAvailable::class) {
-                $msg = $e->getMessage();
-            }
+        //     if (get_class($e) == \App\Exceptions\PurchaseSellMismatch::class) {
+        //         $msg = $e->getMessage();
+        //     }
+        //     if (get_class($e) == \App\Exceptions\AdvanceBalanceNotAvailable::class) {
+        //         $msg = $e->getMessage();
+        //     }
 
-            $output = ['success' => 0,
-                            'msg' => $msg
-                        ];
-        }
+        //     $output = ['success' => 0,
+        //                     'msg' => $msg
+        //                 ];
+        // }
 
         if (!$is_direct_sale) {
             return $output;
@@ -747,6 +756,7 @@ class SellPosController extends Controller
      */
     public function edit($id)
     {
+        // dd($id);
         $business_id = request()->session()->get('user.business_id');
 
         if (!(auth()->user()->can('superadmin') || auth()->user()->can('sell.update') || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'repair_module') && auth()->user()->can('repair.update')))) {
@@ -1104,6 +1114,9 @@ class SellPosController extends Controller
 
                 if (!empty($request->input('transaction_date'))) {
                     $input['transaction_date'] = $this->productUtil->uf_date($request->input('transaction_date'), true);
+                }
+                if (!empty($request->input('due_dates'))) {
+                    $input['due_dates'] = $this->productUtil->uf_date($request->input('due_dates'), true);
                 }
 
                 $input['commission_agent'] = !empty($request->input('commission_agent')) ? $request->input('commission_agent') : null;
@@ -2035,6 +2048,8 @@ class SellPosController extends Controller
                 ->select(
                     'transactions.id',
                     'transactions.transaction_date',
+                    'transactions.due
+                    _date',
                     'transactions.is_direct_sale',
                     'transactions.invoice_no',
                     'contacts.name',

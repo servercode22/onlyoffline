@@ -1,6 +1,5 @@
 <!-- business information here -->
-
-<div class="row">
+	<div class="row">
 
 	<!-- Logo -->
 	@if(!empty($receipt_details->logo))
@@ -31,6 +30,7 @@
 				</small>
 		@endif
 		@if(!empty($receipt_details->contact))
+
 			<br/>{!! $receipt_details->contact !!}
 		@endif	
 		@if(!empty($receipt_details->contact) && !empty($receipt_details->website))
@@ -88,6 +88,8 @@
 				@if(!empty($receipt_details->types_of_service))
 					<br/>
 					<span class="pull-left text-left">
+
+
 						<strong>{!! $receipt_details->types_of_service_label !!}:</strong>
 						{{$receipt_details->types_of_service}}
 						<!-- Waiter info -->
@@ -143,10 +145,10 @@
 			</span>
 
 			<span class="pull-right text-left">
-				<b>{{$receipt_details->date_label}}</b> {{$receipt_details->invoice_date}}
-
+				<b>{{$receipt_details->date_label}}</b> {{$receipt_details->invoice_date}}<br>
+				{{-- <b>{{$receipt_details->due_date_label}}</b> {{$receipt_details->due_date}} --}}
 				@if(!empty($receipt_details->due_date_label))
-				<br><b>{{$receipt_details->due_date_label}}</b> {{$receipt_details->due_date ?? ''}}
+				<br><b>{{$receipt_details->due_date_label}}</b> {{$receipt_details->due_dates ?? ''}}
 				@endif
 
 				@if(!empty($receipt_details->brand_label) || !empty($receipt_details->repair_brand))

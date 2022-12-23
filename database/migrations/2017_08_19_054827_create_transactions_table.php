@@ -38,6 +38,7 @@ class CreateTransactionsTable extends Migration
             $table->decimal('final_total', 22, 4)->default(0);
             $table->integer('created_by')->unsigned();
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->dateTime('due_dates');
             $table->timestamps();
 
             //Indexing

@@ -71,12 +71,25 @@
 		@endif
 	@if(!empty($pos_settings['enable_transaction_date']))
 		<div class="col-md-4 col-sm-6">
+			<label> Booking Date</label>
 			<div class="form-group">
 				<div class="input-group">
 					<span class="input-group-addon">
 						<i class="fa fa-calendar"></i>
 					</span>
 					{!! Form::text('transaction_date', @format_datetime($transaction->transaction_date), ['class' => 'form-control', 'readonly', 'required', 'id' => 'transaction_date']); !!}
+				</div>
+			</div>
+		</div>
+		{{-- @dd($transaction->due_date); --}}
+		<div class="col-md-4 col-sm-6">
+			<label> Due Date</label>
+			<div class="form-group">
+				<div class="input-group">
+					<span class="input-group-addon">
+						<i class="fa fa-calendar"></i>
+					</span>
+					{!! Form::text('due_dates', @format_datetime( $transaction->due_dates), ['class' => 'form-control', 'readonly', 'required', 'id' => 'due_date']); !!}
 				</div>
 			</div>
 		</div>

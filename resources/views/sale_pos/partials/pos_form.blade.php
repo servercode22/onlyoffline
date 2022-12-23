@@ -75,8 +75,10 @@
 		</div>
 	@endif
 	@if(!empty($pos_settings['enable_transaction_date']))
-		<div class="col-md-4 col-sm-6">
-			<div class="form-group">
+	
+		<div class="col-md-5 col-sm-6">	
+			<label>Booking Date :</label>	
+			<div class="form-group">		
 				<div class="input-group">
 					<span class="input-group-addon">
 						<i class="fa fa-calendar"></i>
@@ -86,6 +88,20 @@
 			</div>
 		</div>
 	@endif
+
+	<div class="col-md-5 col-sm-6">	
+		<div class="form-group">
+			<label>Due Date :</label>
+			<div class="input-group">
+				<span class="input-group-addon">
+					<i class="fa fa-calendar"></i>
+				</span>
+				
+				{!! Form::text('due_dates', $default_datetime, ['class' => 'form-control', 'required', 'readonly', 'id' => 'due_date']); !!}
+			</div>
+		</div>
+	</div>	
+
 	@if(config('constants.enable_sell_in_diff_currency') == true)
 		<div class="col-md-4 col-sm-6">
 			<div class="form-group">

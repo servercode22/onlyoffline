@@ -83,10 +83,10 @@
 			</p>
 			</div>
 			<div class="border-top textbox-info">
-				<p class="f-left"><strong>{!! $receipt_details->invoice_no_prefix !!}</strong></p>
-				<p class="f-right">
-					{{$receipt_details->invoice_no}}
-				</p>
+				<h5 class="f-left">{!! $receipt_details->invoice_no_prefix !!}</h5>
+				<h4 class="f-right" style="font-weight: bolder">
+					{{$receipt_details->invoice_no}} 
+				</h4>
 			</div>
 			<div class="textbox-info">
 				<p class="f-left"><strong>{!! $receipt_details->date_label !!}</strong></p>
@@ -98,7 +98,7 @@
 			@if(!empty($receipt_details->due_date_label))
 				<div class="textbox-info">
 					<p class="f-left"><strong>{{$receipt_details->due_date_label}}</strong></p>
-					<p class="f-right">{{$receipt_details->due_date ?? ''}}</p>
+					<p class="f-right">{{$receipt_details->due_dates ?? ''}}</p>
 				</div>
 			@endif
 
@@ -174,7 +174,7 @@
         	<!-- Waiter info -->
 			@if(!empty($receipt_details->service_staff_label) || !empty($receipt_details->service_staff))
 	        	<div class="textbox-info">
-	        		<p class="f-left"><strong>
+	        		<p class="f-left"><strong >
 	        			{!! $receipt_details->service_staff_label !!}
 	        		</strong></p>
 	        		<p class="f-right">
@@ -197,20 +197,21 @@
 	        @endif
 
 	        <!-- customer info -->
-	        <div class="textbox-info">
-	        	<p style="vertical-align: top;"><strong>
-	        		{{$receipt_details->customer_label ?? ''}}
-	        	</strong></p>
+				<div class="textbox-info">
+					<p style="vertical-align: top;"><strong>
+						{{$receipt_details->customer_label ?? ''}}
+					</strong></p>
 
-	        	<p>
-	        		@if(!empty($receipt_details->customer_info))
-	        			<div class="bw">
-						{!! $receipt_details->customer_info !!}
-						</div>
-					@endif
-	        	</p>
-	        </div>
-			
+					<p>
+						@if(!empty($receipt_details->customer_info))
+							<div class="bw">
+								
+							{!! $receipt_details->customer_info !!}
+							</div>
+						@endif
+					</p>
+				</div>
+				
 			@if(!empty($receipt_details->client_id_label))
 				<div class="textbox-info">
 					<p class="f-left"><strong>
@@ -240,6 +241,20 @@
 					</p>
 				</div>
 			@endif
+
+
+
+		
+					@if(!empty($receipt_details->types_of_service))
+						<span class="pull-left text-left">
+							<strong
+							style="text-transform: capitalize">
+							{!! $receipt_details->types_of_service_label !!}:</strong>
+							<p class="f-right">
+							{{$receipt_details->types_of_service}}
+							</p>
+					@endif
+
 			
 			@if(!empty($receipt_details->customer_rp_label))
 				<div class="textbox-info">
@@ -598,6 +613,10 @@
 						</p>
 					</div>
 				@endif
+
+
+					
+
 
 				<!-- Total Due-->
 				@if(!empty($receipt_details->total_due) && !empty($receipt_details->total_due_label))

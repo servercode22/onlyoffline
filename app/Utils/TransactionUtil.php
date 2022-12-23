@@ -42,11 +42,13 @@ class TransactionUtil extends Util
      */
     public function createSellTransaction($business_id, $input, $invoice_total, $user_id, $uf_data = true)
     {
+        
         $sale_type = !empty($input['type']) ? $input['type'] : 'sell';
         $invoice_scheme_id = !empty($input['invoice_scheme_id']) ? $input['invoice_scheme_id'] : null;
         $invoice_no = !empty($input['invoice_no']) ? $input['invoice_no'] : $this->getInvoiceNumber($business_id, $input['status'], $input['location_id'], $invoice_scheme_id, $sale_type);
 
         $final_total = $uf_data ? $this->num_uf($input['final_total']) : $input['final_total'];
+   
         $transaction = Transaction::create([
             'business_id' => $business_id,
             'location_id' => $input['location_id'],
@@ -60,6 +62,7 @@ class TransactionUtil extends Util
             'source' => !empty($input['source']) ? $input['source'] : null,
             'total_before_tax' => $invoice_total['total_before_tax'],
             'transaction_date' => $input['transaction_date'],
+            'due_dates' => $input['due_dates'],
             'tax_id' => !empty($input['tax_rate_id']) ? $input['tax_rate_id'] : null,
             'discount_type' => !empty($input['discount_type']) ? $input['discount_type'] : null,
             'discount_amount' => $uf_data ? $this->num_uf($input['discount_amount']) : $input['discount_amount'],
@@ -133,7 +136,8 @@ class TransactionUtil extends Util
             'additional_expense_key_4' => !empty($input['additional_expense_key_4']) ? $input['additional_expense_key_4'] : null,
 
         ]);
-
+        // dd($transaction);
+      
         return $transaction;
     }
 
@@ -243,6 +247,9 @@ class TransactionUtil extends Util
             $update_date['transaction_date'] = $input['transaction_date'];
         }
         
+        if (!empty($input['due_dates'])) {
+            $update_date['due_dates'] = $input['due_dates'];
+        }
         $transaction->fill($update_date);
         $transaction->update();
 
@@ -863,7 +870,7 @@ class TransactionUtil extends Util
     {
         $il = $invoice_layout;
 
-        $transaction = Transaction::find($transaction_id);
+        $transaction = Transaction::select('transactions.*','transactions.due_dates as dues_dates')->find($transaction_id);
         $transaction_type = $transaction->type;
 
         $output = [
@@ -1147,21 +1154,26 @@ class TransactionUtil extends Util
         } else {
             $output['invoice_date'] = \Carbon::createFromFormat('Y-m-d H:i:s', $transaction->transaction_date)->format($il->date_time_format);
         }
-
+        if (blank($il->date_time_format)) {
+            $output['due_dates'] = $this->format_date($transaction->due_dates, true, $business_details);
+        } else {
+            $output['due_dates'] = \Carbon::createFromFormat('Y-m-d H:i:s', $transaction->due_dates)->format($il->date_time_format);
+        }
+        $output['due_date_label'] = "Due Date";
         $output['transaction_date'] = $transaction->transaction_date;
         $output['date_time_format'] = $business_details->date_format;
         $output['currency_symbol'] = $business_details->currency_symbol;
-
+        $output['dues_dates'] = $transaction->dues_dates;
         $output['hide_price'] = !empty($il->common_settings['hide_price']) ? true : false;
 
         if (!empty($il->common_settings['show_due_date']) && $transaction->payment_status != 'paid') {
             $output['due_date_label'] = !empty($il->common_settings['due_date_label']) ? $il->common_settings['due_date_label'] : '';
-            $due_date = $transaction->due_date;
+            $due_dates = $transaction->due_dates;
             if (!empty($due_date)) {
                 if (blank($il->date_time_format)) {
-                    $output['due_date'] = $this->format_date($due_date->toDateTimeString(), true, $business_details);
+                    $output['due_dates'] = $this->format_date($due_date->toDateTimeString(), true, $business_details);
                 } else {
-                    $output['due_date'] = \Carbon::createFromFormat('Y-m-d H:i:s', $due_date->toDateTimeString())->format($il->date_time_format);
+                    $output['due_dates'] = \Carbon::createFromFormat('Y-m-d H:i:s', $due_date->toDateTimeString())->format($il->date_time_format);
                 }
             }
         }
@@ -3566,6 +3578,7 @@ class TransactionUtil extends Util
      */
     public function canBeEdited($transaction, $edit_duration)
     {
+        // dd($transaction);
         if (!is_object($transaction)) {
             $transaction = Transaction::find($transaction);
         }
@@ -3774,6 +3787,7 @@ class TransactionUtil extends Util
             'ref_no' => $input['ref_no'],
             'total_before_tax' => $invoice_total['total_before_tax'],
             'transaction_date' => $input['transaction_date'],
+            'due_dates' => $input['due_dates'],
             'tax_id' => null,
             'discount_type' => $input['discount_type'],
             'discount_amount' => $this->num_uf($input['discount_amount']),
@@ -4773,6 +4787,7 @@ class TransactionUtil extends Util
                 ->select(
                     'transactions.id',
                     'transactions.transaction_date',
+                    'transactions.due_dates as dues_dates',
                     'transactions.type',
                     'transactions.is_direct_sale',
                     'transactions.invoice_no',

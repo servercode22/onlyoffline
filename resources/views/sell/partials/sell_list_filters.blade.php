@@ -31,6 +31,7 @@
     </div>
 </div>
 @endif
+
 @if((empty($only) || in_array('created_by', $only)) && !empty($sales_representative))
 <div class="col-md-3">
     <div class="form-group">
@@ -67,6 +68,15 @@
         </div>
     </div>
 @endif
+@if(empty($due_date) || in_array('sell_list_filter_due_date', $due_date))
+<div class="col-md-3">
+    <div class="form-group">    
+        {!! Form::label('sell_list_filter_due_date ', __('Due Date') . ':') !!}
+        {!! Form::date('sell_list_filter_due_date',  null, [ 'class' => 'form-control' ,'id'=>'due_date_filter']); !!}
+    </div>
+</div>
+@endif
+
 @if(empty($only) || in_array('only_subscriptions', $only))
 <div class="col-md-3">
     <div class="form-group">

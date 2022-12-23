@@ -73,6 +73,7 @@ class SellController extends Controller
      */
     public function index()
     {
+
         $is_admin = $this->businessUtil->is_admin(auth()->user());
 
         if ( !$is_admin && !auth()->user()->hasAnyPermission(['sell.view', 'sell.create', 'direct_sell.access', 'direct_sell.view', 'view_own_sell_only', 'view_commission_agent_sell', 'access_shipping', 'access_own_shipping', 'access_commission_agent_shipping', 'so.view_all', 'so.view_own']) ) {
@@ -85,6 +86,7 @@ class SellController extends Controller
         $is_tables_enabled = $this->transactionUtil->isModuleEnabled('tables');
         $is_service_staff_enabled = $this->transactionUtil->isModuleEnabled('service_staff');
         $is_types_service_enabled = $this->moduleUtil->isModuleEnabled('types_of_service');
+       
 
         if (request()->ajax()) {
             $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
@@ -199,6 +201,10 @@ class SellController extends Controller
                 $sells->whereDate('transactions.transaction_date', '>=', $start)
                             ->whereDate('transactions.transaction_date', '<=', $end);
             }
+           if (!empty(request()->due_date_filter)) {
+               $due_dates =   request()->due_date_filter;
+               $sells->whereDate('transactions.due_dates', $due_dates);
+           }
 
             //Check is_direct sell
             if (request()->has('is_direct_sale')) {
@@ -327,7 +333,7 @@ class SellController extends Controller
 
             //$business_details = $this->businessUtil->getDetails($business_id);
             if ($this->businessUtil->isModuleEnabled('subscription')) {
-                $sells->addSelect('transactions.is_recurring', 'transactions.recur_parent_id');
+                $sells->addSelect('transactions.is_recurring', 'transactions.due_dates', 'transactions.recur_parent_id');
             }
             $sales_order_statuses = Transaction::sales_order_statuses();
             $datatable = Datatables::of($sells)
@@ -357,7 +363,8 @@ class SellController extends Controller
                                 }
                             } else {
                                 if (auth()->user()->can("direct_sell.update")) {
-                                    $html .= '<li><a target="_blank" href="' . action('SellController@edit', [$row->id]) . '"><i class="fas fa-edit"></i> ' . __("messages.edit") . '</a></li>';
+                                    $html .= '<li><a target="_blank" href="' . action('SellController@
+                                    ', [$row->id]) . '"><i class="fas fa-edit"></i> ' . __("messages.edit") . '</a></li>';
                                 }
                             }
 
@@ -468,6 +475,7 @@ class SellController extends Controller
                     }
                 )
                 ->editColumn('transaction_date', '{{@format_datetime($transaction_date)}}')
+                ->editColumn('due_dates', '{{@format_datetime($dues_dates)}}')
                 ->editColumn(
                     'payment_status',
                     function ($row) {
@@ -572,7 +580,7 @@ class SellController extends Controller
                         }
                     }]);
 
-            $rawColumns = ['final_total', 'action', 'total_paid', 'total_remaining', 'payment_status', 'invoice_no', 'discount_amount', 'tax_amount', 'total_before_tax', 'shipping_status', 'types_of_service_name', 'payment_methods', 'return_due', 'conatct_name', 'status'];
+            $rawColumns = ['final_total', 'action', 'total_paid', 'total_remaining', 'payment_status', 'invoice_no', 'discount_amount', 'tax_amount', 'total_before_tax', 'shipping_status', 'types_of_service_name', 'payment_methods', 'return_due', 'conatct_name', 'status','due_date'];
                 
             return $datatable->rawColumns($rawColumns)
                       ->make(true);
@@ -677,7 +685,7 @@ class SellController extends Controller
         $price_groups = SellingPriceGroup::forDropdown($business_id);
 
         $default_datetime = $this->businessUtil->format_date('now', true);
-
+        
         $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
 
         $invoice_schemes = InvoiceScheme::forDropdown($business_id);
@@ -1271,6 +1279,13 @@ class SellController extends Controller
                             ->whereDate('transaction_date', '<=', $end);
             }
 
+                 
+            if (!empty(request()->start_date) && !empty(request()->end_date)) {
+                $start = request()->start_date;
+                $end =  request()->end_date;
+                $sells->whereDate('due_date', '>=', $start)
+                            ->whereDate('due_date', '<=', $end);
+            }
             if (request()->has('location_id')) {
                 $location_id = request()->get('location_id');
                 if (!empty($location_id)) {
